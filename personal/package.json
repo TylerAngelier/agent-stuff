@@ -1,0 +1,25 @@
+{
+  "name": "trangelier-pi-personal",
+  "version": "0.1.0",
+  "description": "Personal-only pi coding agent extensions and skills",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi-skill"
+  ],
+  "type": "module",
+  "pi": {
+    "extensions": [
+      "./extensions"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-ai": "*",
+    "@mariozechner/pi-tui": "*"
+  }
+}
