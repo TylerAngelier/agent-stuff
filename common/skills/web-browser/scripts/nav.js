@@ -5,14 +5,20 @@ import { connect } from "./cdp.js";
 const DEBUG = process.env.DEBUG === "1";
 const log = DEBUG ? (...args) => console.error("[debug]", ...args) : () => {};
 
-const url = process.argv[2];
-const newTab = process.argv[3] === "--new";
+const args = process.argv.slice(2);
+const url = args.find((a) => !a.startsWith("--"));
+const newTab = args.includes("--new");
+const noWait = args.includes("--no-wait");
 
 if (!url) {
-  console.log("Usage: nav.js <url> [--new]");
+  console.log("Usage: nav.js <url> [--new] [--no-wait]");
+  console.log("\nOptions:");
+  console.log("  --new      Open in a new tab");
+  console.log("  --no-wait  Return immediately without waiting for load");
   console.log("\nExamples:");
-  console.log("  nav.js https://example.com       # Navigate current tab");
-  console.log("  nav.js https://example.com --new # Open in new tab");
+  console.log("  nav.js https://example.com           # Navigate and wait for load");
+  console.log("  nav.js https://example.com --new     # Open new tab and wait");
+  console.log("  nav.js https://example.com --no-wait # Fire and forget");
   process.exit(1);
 }
 
@@ -48,8 +54,34 @@ try {
   log("attaching to page...");
   const sessionId = await cdp.attachToPage(targetId);
 
+  // Set up load listener BEFORE navigating to avoid race conditions
+  let loadPromise = null;
+  if (!noWait) {
+    await cdp.send("Page.enable", {}, sessionId);
+    loadPromise = new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        cdp.off("Page.loadEventFired", handler);
+        reject(new Error("Page load timeout (30s)"));
+      }, 30000);
+
+      const handler = (params, sid) => {
+        if (sid === sessionId) {
+          clearTimeout(timer);
+          cdp.off("Page.loadEventFired", handler);
+          resolve();
+        }
+      };
+      cdp.on("Page.loadEventFired", handler);
+    });
+  }
+
   log("navigating...");
   await cdp.navigate(sessionId, url);
+
+  if (loadPromise) {
+    log("waiting for page load...");
+    await loadPromise;
+  }
 
   console.log(newTab ? "✓ Opened:" : "✓ Navigated to:", url);
 

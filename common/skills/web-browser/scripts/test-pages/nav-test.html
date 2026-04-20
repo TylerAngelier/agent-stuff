@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nav Test Page</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
+    .status { padding: 12px; border-radius: 6px; margin: 8px 0; }
+    .pending { background: #fef3c7; color: #92400e; }
+    .loaded { background: #d1fae5; color: #065f46; }
+  </style>
+</head>
+<body>
+  <h1>Nav Test Page</h1>
+  <div id="status" class="status pending">⏳ Page loading (simulated delay)…</div>
+  <div id="content" style="display:none">
+    <p>This content appears after a simulated load delay.</p>
+    <p id="timestamp"></p>
+  </div>
+  <script>
+    // Simulate slow resources — content only appears after 2s
+    setTimeout(() => {
+      document.getElementById('status').className = 'status loaded';
+      document.getElementById('status').textContent = '✅ Page fully loaded!';
+      document.getElementById('content').style.display = 'block';
+      document.getElementById('timestamp').textContent = 'Loaded at: ' + new Date().toISOString();
+    }, 2000);
+  </script>
+</body>
+</html>

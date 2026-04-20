@@ -28,9 +28,28 @@ BROWSER_BIN=/path/to/chrome ./scripts/start.js
 ```bash
 ./scripts/nav.js https://example.com
 ./scripts/nav.js https://example.com --new
+./scripts/nav.js https://example.com --no-wait
 ```
 
-Navigate current tab or open new tab.
+Navigate current tab or open new tab. By default waits for the page's `load` event
+before returning (ensures DOM is ready). Use `--no-wait` to return immediately.
+
+## Click
+
+```bash
+./scripts/click.js "#submit-btn"
+./scripts/click.js "a[href*='login']"
+./scripts/click.js ".cta-button" --scroll
+./scripts/click.js "#btn" --json
+```
+
+Click an element by CSS selector. Uses CDP `Input.dispatchMouseEvent` (produces trusted
+events). Automatically scrolls elements into view if they're outside the viewport.
+Errors if the element is not found or hidden (display:none / visibility:hidden / opacity:0).
+
+Options:
+- `--scroll` — Force scroll into view even if partially visible
+- `--json` — Output structured JSON result
 
 ## Evaluate JavaScript
 

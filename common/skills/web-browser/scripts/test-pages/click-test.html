@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Click Test Page</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
+    button { padding: 10px 20px; margin: 8px; font-size: 16px; cursor: pointer; border-radius: 6px; border: 1px solid #ccc; }
+    button:hover { background: #e0e7ff; }
+    #log { background: #1f2937; color: #d1d5db; padding: 12px; border-radius: 6px; font-family: monospace; min-height: 100px; margin-top: 16px; white-space: pre-wrap; }
+    .hidden-btn { position: absolute; left: -9999px; }
+  </style>
+</head>
+<body>
+  <h1>Click Test Page</h1>
+
+  <button id="btn-simple">Simple Button</button>
+  <button id="btn-deep" class="action-btn primary"><span class="label">Nested Span Button</span></button>
+  <button id="btn-offscreen" class="hidden-btn">Offscreen Button</button>
+
+  <div style="height: 200vh"></div>
+  <div>
+    <button id="btn-scrolled">Way Down Here</button>
+  </div>
+  <div style="height: 50vh"></div>
+
+  <div id="log"></div>
+
+  <script>
+    const log = (msg) => {
+      const el = document.getElementById('log');
+      el.textContent += msg + '\n';
+    };
+
+    document.getElementById('btn-simple').addEventListener('click', () => log('✅ btn-simple clicked'));
+    document.getElementById('btn-deep').addEventListener('click', () => log('✅ btn-deep clicked'));
+    document.getElementById('btn-offscreen').addEventListener('click', () => log('✅ btn-offscreen clicked'));
+    document.getElementById('btn-scrolled').addEventListener('click', () => log('✅ btn-scrolled clicked'));
+
+    // Track real mouse events to verify Input.dispatchMouseEvent works
+    ['mouseover', 'mousedown', 'mouseup', 'click'].forEach(evt => {
+      document.getElementById('btn-simple').addEventListener(evt, (e) => {
+        log(`  → ${evt} on btn-simple (${e.isTrusted ? 'trusted' : 'untrusted'})`);
+      });
+    });
+  </script>
+</body>
+</html>
